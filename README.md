@@ -111,8 +111,7 @@ cd delivery-route-optimizer
 ```
 
 Gradle wrapper is included - you don't need Gradle installed separately.
-> **Note:** The Git history is structured with sequential, topic-based commits - from project scaffold → models → algorithms → tests → docs. You can walk through the commit history to see how the project was built incrementally.
-
+> **Note:** The initial project scaffold was pushed directly to `main`. All subsequent development was done in a `feature/routeOptimizerImpl` branch with sequential, topic-based commits - from models → algorithms → tests → docs. The feature branch was then merged into `main` via a [Pull Request](https://github.com/rithik-jain/delivery-route-optimizer/pull/1). You can walk through the commit history and the PR to see how the project was built incrementally.
 ---
 
 ## Run Application
