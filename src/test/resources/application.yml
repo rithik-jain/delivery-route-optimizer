@@ -1,0 +1,12 @@
+server:
+  port: 0
+
+app:
+  routing:
+    exact-threshold: 7
+    average-speed-kmph: 20.0
+
+logging:
+  level:
+    com.lucidity: WARN
+    root: WARN
