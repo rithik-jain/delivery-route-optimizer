@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: delivery-route-optimizer
+
+app:
+  routing:
+    # Orders <= this threshold use the exact (permutation) solver.
+    # Above this, the greedy heuristic kicks in.
+    exact-threshold: 7
+
+logging:
+  level:
+    com.lucidity: DEBUG
+    root: INFO
