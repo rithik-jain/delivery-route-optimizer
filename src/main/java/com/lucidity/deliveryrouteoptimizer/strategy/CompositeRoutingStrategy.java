@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class CompositeRoutingStrategy implements RoutingStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(CompositeRoutingStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompositeRoutingStrategy.class);
 
     private final RoutingStrategy exactStrategy;
     private final RoutingStrategy greedyStrategy;
@@ -42,7 +42,7 @@ public class CompositeRoutingStrategy implements RoutingStrategy {
         this.exactStrategy = new PermutationRoutingStrategy(distanceCalculator, averageSpeedKmph);
         this.greedyStrategy = new GreedyRoutingStrategy(distanceCalculator, averageSpeedKmph);
 
-        log.info("CompositeRoutingStrategy initialized — speed: {} km/hr, exact for <={} orders, greedy otherwise",
+        LOGGER.info("CompositeRoutingStrategy initialized — speed: {} km/hr, exact for <={} orders, greedy otherwise",
                 averageSpeedKmph, exactThreshold);
     }
 
@@ -63,10 +63,10 @@ public class CompositeRoutingStrategy implements RoutingStrategy {
         int batchSize = orders.size();
 
         if (batchSize <= exactThreshold) {
-            log.info("Batch size {} <= threshold {}. Using exact solver.", batchSize, exactThreshold);
+            LOGGER.info("Batch size {} <= threshold {}. Using exact solver.", batchSize, exactThreshold);
             return exactStrategy.findOptimalRoute(startLocation, orders);
         } else {
-            log.info("Batch size {} > threshold {}. Switching to greedy.", batchSize, exactThreshold);
+            LOGGER.info("Batch size {} > threshold {}. Switching to greedy.", batchSize, exactThreshold);
             return greedyStrategy.findOptimalRoute(startLocation, orders);
         }
     }

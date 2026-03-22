@@ -1,5 +1,6 @@
 package com.lucidity.deliveryrouteoptimizer.strategy;
 
+import com.lucidity.deliveryrouteoptimizer.constant.AppConstants;
 import com.lucidity.deliveryrouteoptimizer.distance.DistanceCalculator;
 import com.lucidity.deliveryrouteoptimizer.util.DeliveryTimeHelper;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryResponseVo;
@@ -67,7 +68,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
         SearchState state = new SearchState(n);
         BestResult best = new BestResult(context.getTotalStops(), estimateGreedyBound(context));
-        LOGGER.debug("Greedy upper bound for pruning: {} min", String.format("%.2f", best.time));
+        LOGGER.debug("Greedy upper bound for pruning: {} min", String.format(AppConstants.DECIMAL_FORMAT_TWO, best.time));
         solve(context, state, best);
         return buildResponse(startLocation, orders, best, context);
     }
@@ -286,7 +287,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
         }
 
         LOGGER.info("Optimal route found — total time: {} min, distance: {} km",
-                String.format("%.2f", best.time), String.format("%.2f", totalDistance));
+                String.format(AppConstants.DECIMAL_FORMAT_TWO, best.time), String.format(AppConstants.DECIMAL_FORMAT_TWO, totalDistance));
 
         return new DeliveryResponseVo(
                 steps,

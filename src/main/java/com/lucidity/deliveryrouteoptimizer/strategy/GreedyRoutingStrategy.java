@@ -1,5 +1,6 @@
 package com.lucidity.deliveryrouteoptimizer.strategy;
 
+import com.lucidity.deliveryrouteoptimizer.constant.AppConstants;
 import com.lucidity.deliveryrouteoptimizer.distance.DistanceCalculator;
 import com.lucidity.deliveryrouteoptimizer.util.DeliveryTimeHelper;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryResponseVo;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class GreedyRoutingStrategy implements RoutingStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(GreedyRoutingStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GreedyRoutingStrategy.class);
 
     /** Penalty weight for idle time — discourages waiting at restaurants. */
     private static final double WAIT_PENALTY_WEIGHT = 0.8;
@@ -62,7 +63,7 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
     @Override
     public DeliveryResponseVo findOptimalRoute(LocationVo startLocation, List<OrderVo> orders) {
         int n = orders.size();
-        log.info("Running greedy heuristic for {} orders from {}", n, startLocation);
+        LOGGER.info("Running greedy heuristic for {} orders from {}", n, startLocation);
 
         RouteProblemContext context = RouteProblemContext.build(
                 startLocation, orders, distanceCalculator, averageSpeedKmph);
@@ -87,8 +88,8 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
 
         double totalDistance = calculateTotalDistance(startLocation, steps);
 
-        log.info("Greedy route computed — total time: {} min, distance: {} km",
-                String.format("%.2f", currentTime), String.format("%.2f", totalDistance));
+        LOGGER.info("Greedy route computed — total time: {} min, distance: {} km",
+                String.format(AppConstants.DECIMAL_FORMAT_TWO, currentTime), String.format(AppConstants.DECIMAL_FORMAT_TWO, totalDistance));
 
         return new DeliveryResponseVo(
                 steps,
