@@ -111,6 +111,7 @@ cd delivery-route-optimizer
 ```
 
 Gradle wrapper is included - you don't need Gradle installed separately.
+> **Note:** The Git history is structured with sequential, topic-based commits - from project scaffold → models → algorithms → tests → docs. You can walk through the commit history to see how the project was built incrementally.
 
 ---
 
