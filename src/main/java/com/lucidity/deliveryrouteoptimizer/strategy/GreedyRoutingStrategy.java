@@ -17,7 +17,7 @@ import java.util.List;
  * A greedy "smart nearest-neighbour" heuristic for larger order batches.
  *
  * <p>At each step, evaluates all legal next moves and picks the one with
- * the lowest effective cost — a blend of travel time and idle waiting.
+ * the lowest effective cost - a blend of travel time and idle waiting.
  * Runs in O(N²), won't always find THE best route, but finds a good one fast.</p>
  *
  * <p>Pickups and deliveries are freely interleaved. A consumer is only
@@ -29,10 +29,10 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GreedyRoutingStrategy.class);
 
-    /** Penalty weight for idle time — discourages waiting at restaurants. */
+    /** Penalty weight for idle time - discourages waiting at restaurants. */
     private static final double WAIT_PENALTY_WEIGHT = 0.8;
 
-    /** Slight bonus for deliveries — avoids holding food too long. */
+    /** Slight bonus for deliveries - avoids holding food too long. */
     private static final double DELIVERY_COST_FACTOR = 0.95;
 
     private final DistanceCalculator distanceCalculator;
@@ -50,7 +50,7 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
 
     @Override
     public String getStrategyName() {
-        return "Smart Greedy Nearest-Neighbour (Heuristic)";
+        return "Greedy Nearest-Neighbour (Heuristic)";
     }
 
     /**
@@ -88,7 +88,7 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
 
         double totalDistance = calculateTotalDistance(startLocation, steps);
 
-        LOGGER.info("Greedy route computed — total time: {} min, distance: {} km",
+        LOGGER.info("Greedy route computed - total time: {} min, distance: {} km",
                 String.format(AppConstants.DECIMAL_FORMAT_TWO, currentTime), String.format(AppConstants.DECIMAL_FORMAT_TWO, totalDistance));
 
         return new DeliveryResponseVo(
@@ -119,7 +119,6 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
         int n = context.getOrderCount();
 
         for (int i = 0; i < n; i++) {
-            // Try pickup from restaurant i
             if (!restaurantVisited[i]) {
                 double travelTime = context.getTravelTimes()[currentLoc][i];
                 double arrival = currentTime + travelTime;
@@ -134,7 +133,6 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
                 }
             }
 
-            // Try delivery to consumer i
             if (restaurantVisited[i] && !consumerVisited[i]) {
                 double travelTime = context.getTravelTimes()[currentLoc][context.consumerIdx(i)];
                 double arrival = currentTime + travelTime;
@@ -179,8 +177,8 @@ public class GreedyRoutingStrategy implements RoutingStrategy {
         LocationVo location = candidate.isPickup
                 ? order.getRestaurantLocation()
                 : order.getConsumerLocation();
-        String action = candidate.isPickup ? "PICKUP from Restaurant" : "DELIVER to Consumer";
-        return new RouteStepVo(stepNumber, location, action, candidate.orderIdx + 1);
+        String action = candidate.isPickup ? AppConstants.PICKUP_FROM_RESTAURANT : AppConstants.DELIVER_TO_CONSUMER;
+        return new RouteStepVo(stepNumber, location, action, order.getOrderNumber());
     }
 
     /**

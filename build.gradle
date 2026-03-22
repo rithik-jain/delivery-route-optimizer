@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
+    id 'jacoco'
 }
 
 group = projectGroup
@@ -30,4 +31,49 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "${jacocoVersion}"
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn tasks.named('test')
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    classDirectories.setFrom(files(sourceSets.main.output.classesDirs.collect {
+        fileTree(dir: it, exclude: [
+                '**/vo/**',
+                '**/exception/**',
+                '**/DeliveryRouteOptimizerApplication.class'
+        ])
+    }))
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+    dependsOn tasks.named('jacocoTestReport')
+
+    classDirectories.setFrom(files(sourceSets.main.output.classesDirs.collect {
+        fileTree(dir: it, exclude: [
+                '**/vo/**',
+                '**/exception/**',
+                '**/DeliveryRouteOptimizerApplication.class'
+        ])
+    }))
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestCoverageVerification')
 }

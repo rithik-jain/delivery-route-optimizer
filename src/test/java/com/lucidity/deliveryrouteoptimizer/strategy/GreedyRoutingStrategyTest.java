@@ -1,10 +1,11 @@
 package com.lucidity.deliveryrouteoptimizer.strategy;
 
-import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.distance.HaversineCalculator;
+import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryRequestVo;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryResponseVo;
 import com.lucidity.deliveryrouteoptimizer.vo.RouteStepVo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +30,7 @@ class GreedyRoutingStrategyTest {
 
     private GreedyRoutingStrategy strategy;
 
+    @BeforeEach
     void setUp() {
         strategy = new GreedyRoutingStrategy(new HaversineCalculator(), 20.0);
     }
@@ -96,7 +98,6 @@ class GreedyRoutingStrategyTest {
         DeliveryResponseVo response = strategy.findOptimalRoute(
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
-        // The 60-min prep order means total time must be at least 60 min
         assertTrue(response.getTotalTimeInMinutes() >= 60.0,
                 "Should wait for the long-prep order");
         assertPrecedenceConstraintHolds(response.getRoute());

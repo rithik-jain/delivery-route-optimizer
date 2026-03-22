@@ -11,6 +11,8 @@ public final class AppConstants {
         // Prevent instantiation of utility class
     }
     public static final String DECIMAL_FORMAT_TWO = "%.2f";
+    public static final String PICKUP_FROM_RESTAURANT = "PICKUP from Restaurant";
+    public static final String DELIVER_TO_CONSUMER = "DELIVER to Consumer";
 }
 
 

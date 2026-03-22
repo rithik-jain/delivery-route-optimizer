@@ -1,6 +1,5 @@
-package com.lucidity.deliveryrouteoptimizer.util;
+package com.lucidity.deliveryrouteoptimizer.distance;
 
-import com.lucidity.deliveryrouteoptimizer.distance.HaversineCalculator;
 import com.lucidity.deliveryrouteoptimizer.vo.LocationVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,10 +19,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Haversine Distance Calculator")
 class HaversineCalculatorTest {
 
-    /** Tolerance in km — Haversine is accurate to within ~0.5% for most distances */
+    private final HaversineCalculator calculator = new HaversineCalculator();
+
+    /** Tolerance in km - Haversine is accurate to within ~0.5% for most distances */
     private static final double DISTANCE_TOLERANCE_KM = 5.0;
     private static final double TIME_TOLERANCE_MIN = 0.01;
-    private final HaversineCalculator calculator = new HaversineCalculator();
 
     @Nested
     @DisplayName("Distance calculations")
@@ -47,20 +47,18 @@ class HaversineCalculatorTest {
 
             double distance = calculator.calculateDistanceInKm(bangalore, mumbai);
 
-            // Actual great-circle distance is approximately 845 km
             assertEquals(845.0, distance, DISTANCE_TOLERANCE_KM,
                     "Bangalore → Mumbai should be approximately 845 km");
         }
 
         @Test
-        @DisplayName("short distance within Bangalore — Koramangala to Indiranagar")
+        @DisplayName("short distance within Bangalore - Koramangala to Indiranagar")
         void shortDistanceWithinBangalore() {
             LocationVo koramangala = new LocationVo(12.9352, 77.6245);
             LocationVo indiranagar = new LocationVo(12.9784, 77.6408);
 
             double distance = calculator.calculateDistanceInKm(koramangala, indiranagar);
 
-            // About 5 km as the crow flies
             assertTrue(distance > 3.0 && distance < 7.0,
                     "Koramangala to Indiranagar should be roughly 5 km, got: " + distance);
         }
@@ -98,28 +96,13 @@ class HaversineCalculatorTest {
     class TravelTimeCalculations {
 
         @Test
-        @DisplayName("20 km at 20 km/hr should take exactly 60 minutes")
-        void basicTravelTime() {
-            // Two points roughly 20 km apart
+        @DisplayName("same point should take zero time")
+        void zeroDistanceTakesZeroTime() {
             LocationVo a = new LocationVo(12.9716, 77.5946);
-            LocationVo b = new LocationVo(12.9716, 77.5946); // same point = 0 km
 
-            double time = calculator.calculateTravelTimeInMinutes(a, b, 20.0);
+            double time = calculator.calculateTravelTimeInMinutes(a, a, 20.0);
 
             assertEquals(0.0, time, TIME_TOLERANCE_MIN, "Zero distance should take zero time");
-        }
-
-        @Test
-        @DisplayName("default speed should be 20 km/hr")
-        void defaultSpeedShouldBe20KmPerHr() {
-            LocationVo a = new LocationVo(12.9352, 77.6245);
-            LocationVo b = new LocationVo(12.9784, 77.6408);
-
-            double withDefault = calculator.calculateTravelTimeInMinutes(a, b, 20.0);
-            double withExplicit = calculator.calculateTravelTimeInMinutes(a, b, 20.0);
-
-            assertEquals(withExplicit, withDefault, TIME_TOLERANCE_MIN,
-                    "Default overload should use 20 km/hr");
         }
 
         @Test
@@ -132,7 +115,7 @@ class HaversineCalculatorTest {
             double fastTime = calculator.calculateTravelTimeInMinutes(a, b, 40.0);
 
             assertTrue(fastTime < slowTime, "Faster speed should give shorter travel time");
-            assertEquals(slowTime, fastTime * 4, 0.01, "Double speed → half time");
+            assertEquals(slowTime, fastTime * 4, 0.01, "4x speed → 1/4 time");
         }
 
         @Test

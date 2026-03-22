@@ -30,10 +30,15 @@ public class OrderVo {
     @Positive(message = "Meal preparation time must be positive")
     private Double mealPreparationTimeInMinutes;
 
+    @NotNull(message = "Order number is required")
+    @Positive(message = "Order number must be positive")
+    private Integer orderNumber;
+
     public OrderVo() {}
 
-    public OrderVo(LocationVo restaurantLocation, LocationVo consumerLocation,
+    public OrderVo(int orderNumber, LocationVo restaurantLocation, LocationVo consumerLocation,
                    double mealPreparationTimeInMinutes) {
+        this.orderNumber = orderNumber;
         this.restaurantLocation = restaurantLocation;
         this.consumerLocation = consumerLocation;
         this.mealPreparationTimeInMinutes = mealPreparationTimeInMinutes;
@@ -60,10 +65,18 @@ public class OrderVo {
         this.mealPreparationTimeInMinutes = mealPreparationTimeInMinutes;
     }
 
+    public Integer getOrderNumber() {
+        return orderNumber;
+    }
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
     @Override
     public String toString() {
         return "Order{restaurant=" + restaurantLocation
                 + ", consumer=" + consumerLocation
+                + ", orderNumber=" + orderNumber
                 + ", prepTime=" + mealPreparationTimeInMinutes + "mins}";
     }
 }

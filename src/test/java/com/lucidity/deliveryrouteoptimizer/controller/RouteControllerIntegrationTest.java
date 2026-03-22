@@ -54,11 +54,11 @@ class RouteControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("POST /api/v1/routes/optimize")
+    @DisplayName("POST /api/v1/routes/optimize - Happy Path")
     class OptimizeRoute {
 
         @Test
-        @DisplayName("happy path — two orders should return a valid route")
+        @DisplayName("two orders should return a valid route")
         void happyPathTwoOrders() throws Exception {
             DeliveryRequestVo request = TestDataFactory.twoOrderScenario();
 
@@ -74,7 +74,7 @@ class RouteControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("single order should work fine")
+        @DisplayName("single order should return 2 steps - pickup then delivery")
         void singleOrder() throws Exception {
             DeliveryRequestVo request = TestDataFactory.singleOrderScenario();
 
@@ -99,10 +99,22 @@ class RouteControllerIntegrationTest {
                     .andExpect(jsonPath("$.route", hasSize(6)))
                     .andExpect(jsonPath("$.totalOrders").value(3));
         }
+
+        @Test
+        @DisplayName("response should include X-Request-Id header")
+        void responseIncludesRequestId() throws Exception {
+            DeliveryRequestVo request = TestDataFactory.singleOrderScenario();
+
+            mockMvc.perform(post("/api/v1/routes/optimize")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(header().exists("X-Request-Id"));
+        }
     }
 
     @Nested
-    @DisplayName("Input Validation")
+    @DisplayName("POST /api/v1/routes/optimize - Validation Failures")
     class InputValidation {
 
         @Test
@@ -110,7 +122,7 @@ class RouteControllerIntegrationTest {
         void missingExecutiveLocation() throws Exception {
             DeliveryRequestVo request = new DeliveryRequestVo(
                     null,
-                    List.of(new OrderVo(TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, 10.0))
+                    List.of(new OrderVo(1, TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, 10.0))
             );
 
             mockMvc.perform(post("/api/v1/routes/optimize")
@@ -139,8 +151,8 @@ class RouteControllerIntegrationTest {
         @DisplayName("invalid latitude should return 400")
         void invalidLatitude() throws Exception {
             DeliveryRequestVo request = new DeliveryRequestVo(
-                    new LocationVo(999.0, 77.5946), // latitude out of range
-                    List.of(new OrderVo(TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, 10.0))
+                    new LocationVo(999.0, 77.5946),
+                    List.of(new OrderVo(1, TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, 10.0))
             );
 
             mockMvc.perform(post("/api/v1/routes/optimize")
@@ -154,7 +166,7 @@ class RouteControllerIntegrationTest {
         void negativePrepTime() throws Exception {
             DeliveryRequestVo request = new DeliveryRequestVo(
                     TestDataFactory.KORAMANGALA,
-                    List.of(new OrderVo(TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, -5.0))
+                    List.of(new OrderVo(1, TestDataFactory.INDIRANAGAR, TestDataFactory.HSR_LAYOUT, -5.0))
             );
 
             mockMvc.perform(post("/api/v1/routes/optimize")
@@ -168,7 +180,7 @@ class RouteControllerIntegrationTest {
         void malformedJson() throws Exception {
             mockMvc.perform(post("/api/v1/routes/optimize")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content("{this is not json"))
+                            .content("this is not json"))
                     .andExpect(status().isBadRequest());
         }
     }

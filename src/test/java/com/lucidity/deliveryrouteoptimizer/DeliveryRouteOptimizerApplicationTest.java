@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * Smoke test — verifies the Spring context loads without errors.
+ * Smoke test - verifies the Spring context loads without errors.
  *
  * @author Rithik Jain
  */

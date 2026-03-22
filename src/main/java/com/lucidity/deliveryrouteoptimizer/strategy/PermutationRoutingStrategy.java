@@ -20,7 +20,7 @@ import java.util.List;
  * permutation (pickup before delivery) and keeps the fastest. Pruning
  * and a greedy upper-bound seed keep it practical for batches up to ~7.</p>
  *
- * <p>Pickups and deliveries are freely interleaved — the solver does NOT
+ * <p>Pickups and deliveries are freely interleaved - the solver does NOT
  * assume "collect all first, then deliver all". At every step both
  * unvisited restaurants and deliverable consumers are candidates.</p>
  *
@@ -30,7 +30,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PermutationRoutingStrategy.class);
 
-    /** Buffer multiplier for greedy upper bound — gives exact search room to improve. */
+    /** Buffer multiplier for greedy upper bound - gives exact search room to improve. */
     private static final double GREEDY_BOUND_BUFFER = 1.05;
 
     private final DistanceCalculator distanceCalculator;
@@ -48,7 +48,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
     @Override
     public String getStrategyName() {
-        return "Exhaustive Permutation Search (Exact)";
+        return "Permutation Search (Exact)";
     }
 
     /**
@@ -118,7 +118,6 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
             if (departure >= best.time) continue;
 
-            // Visit and recurse
             state.restaurantVisited[i] = true;
             state.currentSequence[state.depth] = i;
             state.depth++;
@@ -127,7 +126,6 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
             solve(context, state, best);
 
-            // Backtrack
             state.currentTime = savedTime;
             state.depth--;
             state.restaurantVisited[i] = false;
@@ -151,7 +149,6 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
             if (arrival >= best.time) continue;
 
-            // Visit and recurse
             state.consumerVisited[i] = true;
             state.currentSequence[state.depth] = context.consumerIdx(i);
             state.depth++;
@@ -160,7 +157,6 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
 
             solve(context, state, best);
 
-            // Backtrack
             state.currentTime = savedTime;
             state.depth--;
             state.consumerVisited[i] = false;
@@ -181,7 +177,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
     }
 
     /**
-     * Quick lower bound — if remaining prep times alone would exceed best, prune.
+     * Quick lower bound - if remaining prep times alone would exceed best, prune.
      *
      * @param context precomputed problem data
      * @param state   current search state
@@ -277,16 +273,16 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
                     ? order.getRestaurantLocation()
                     : order.getConsumerLocation();
 
-            String action = isRestaurant ? "PICKUP from Restaurant" : "DELIVER to Consumer";
+            String action = isRestaurant ?  AppConstants.PICKUP_FROM_RESTAURANT : AppConstants.DELIVER_TO_CONSUMER;
 
             LocationVo prevLocation = resolveLocation(prevLoc, startLocation, orders, n);
             totalDistance += distanceCalculator.calculateDistanceInKm(prevLocation, location);
 
-            steps.add(new RouteStepVo(depth + 1, location, action, orderIdx + 1));
+            steps.add(new RouteStepVo(depth + 1, location, action, order.getOrderNumber()));
             prevLoc = locIdx;
         }
 
-        LOGGER.info("Optimal route found — total time: {} min, distance: {} km",
+        LOGGER.info("Optimal route found - total time: {} min, distance: {} km",
                 String.format(AppConstants.DECIMAL_FORMAT_TWO, best.time), String.format(AppConstants.DECIMAL_FORMAT_TWO, totalDistance));
 
         return new DeliveryResponseVo(
@@ -318,7 +314,7 @@ public class PermutationRoutingStrategy implements RoutingStrategy {
     }
 
     /**
-     * Mutable recursion state — passed through and backtracked at each branch.
+     * Mutable recursion state - passed through and backtracked at each branch.
      */
     private static class SearchState {
         final boolean[] restaurantVisited;

@@ -10,3 +10,5 @@ logging:
   level:
     com.lucidity: WARN
     root: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%X{requestId:-NO_REQ}] %-5level %logger{36} - %msg%n"

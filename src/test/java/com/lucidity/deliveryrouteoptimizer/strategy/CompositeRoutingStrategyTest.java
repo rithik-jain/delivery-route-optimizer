@@ -1,9 +1,10 @@
 package com.lucidity.deliveryrouteoptimizer.strategy;
 
-import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.distance.HaversineCalculator;
+import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryRequestVo;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryResponseVo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Rithik Jain
  */
-
 @DisplayName("Composite (Adaptive) Routing Strategy")
 class CompositeRoutingStrategyTest {
 
@@ -26,6 +26,7 @@ class CompositeRoutingStrategyTest {
 
     private static final int THRESHOLD = 5;
 
+    @BeforeEach
     void setUp() {
         compositeStrategy = new CompositeRoutingStrategy(new HaversineCalculator(), THRESHOLD, 20.0);
     }
@@ -39,7 +40,8 @@ class CompositeRoutingStrategyTest {
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
         assertNotNull(result);
-        assertTrue(result.getStrategy().contains("Exact"));
+        assertTrue(result.getStrategy().contains("Exact"),
+                "Expected Exact strategy, got: " + result.getStrategy());
     }
 
     @Test
@@ -51,7 +53,8 @@ class CompositeRoutingStrategyTest {
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
         assertNotNull(result);
-        assertTrue(result.getStrategy().contains("Greedy"));
+        assertTrue(result.getStrategy().contains("Greedy"),
+                "Expected Greedy strategy, got: " + result.getStrategy());
     }
 
     @Test
@@ -62,7 +65,20 @@ class CompositeRoutingStrategyTest {
         DeliveryResponseVo result = compositeStrategy.findOptimalRoute(
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
-        assertTrue(result.getStrategy().contains("Exact"));
+        assertTrue(result.getStrategy().contains("Exact"),
+                "Expected Exact strategy at boundary, got: " + result.getStrategy());
+    }
+
+    @Test
+    @DisplayName("batch just above threshold should use greedy strategy")
+    void usesGreedyJustAboveThreshold() {
+        DeliveryRequestVo request = TestDataFactory.largeOrderScenario(THRESHOLD + 1);
+
+        DeliveryResponseVo result = compositeStrategy.findOptimalRoute(
+                request.getDeliveryExecutiveLocation(), request.getOrders());
+
+        assertTrue(result.getStrategy().contains("Greedy"),
+                "Expected Greedy strategy above threshold, got: " + result.getStrategy());
     }
 
     @Test
@@ -71,6 +87,7 @@ class CompositeRoutingStrategyTest {
         String name = compositeStrategy.getStrategyName();
 
         assertNotNull(name);
-        assertTrue(name.contains("Adaptive"));
+        assertTrue(name.contains("Adaptive"),
+                "Strategy name should indicate adaptive behaviour, got: " + name);
     }
 }

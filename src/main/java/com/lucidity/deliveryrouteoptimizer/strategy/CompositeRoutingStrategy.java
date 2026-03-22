@@ -42,7 +42,7 @@ public class CompositeRoutingStrategy implements RoutingStrategy {
         this.exactStrategy = new PermutationRoutingStrategy(distanceCalculator, averageSpeedKmph);
         this.greedyStrategy = new GreedyRoutingStrategy(distanceCalculator, averageSpeedKmph);
 
-        LOGGER.info("CompositeRoutingStrategy initialized — speed: {} km/hr, exact for <={} orders, greedy otherwise",
+        LOGGER.info("CompositeRoutingStrategy initialized - speed: {} km/hr, exact for <={} orders, greedy otherwise",
                 averageSpeedKmph, exactThreshold);
     }
 

@@ -35,18 +35,26 @@ public class RouteOptimizerService {
      * @return the optimized delivery plan
      */
     public DeliveryResponseVo optimizeRoute(DeliveryRequestVo request) {
-        LOGGER.info("Received optimization request with {} orders", request.getOrders().size());
+        int orderCount = request.getOrders().size();
+        LOGGER.info("Received optimization request with {} orders", orderCount);
 
         long startMs = System.currentTimeMillis();
 
-        DeliveryResponseVo response = routingStrategy.findOptimalRoute(
-                request.getDeliveryExecutiveLocation(),
-                request.getOrders()
-        );
+        try {
+            DeliveryResponseVo response = routingStrategy.findOptimalRoute(
+                    request.getDeliveryExecutiveLocation(),
+                    request.getOrders()
+            );
 
-        long elapsedMs = System.currentTimeMillis() - startMs;
-        LOGGER.info("Route optimization completed in {} ms", elapsedMs);
+            long elapsedMs = System.currentTimeMillis() - startMs;
+            LOGGER.info("Route optimization completed - {} order(s), {} ms, strategy: {}",
+                    orderCount, elapsedMs, response.getStrategy());
 
-        return response;
+            return response;
+        } catch (Exception ex) {
+            long elapsedMs = System.currentTimeMillis() - startMs;
+            LOGGER.error("Route optimization failed after {} ms for {} order(s)", elapsedMs, orderCount);
+            throw ex;
+        }
     }
 }

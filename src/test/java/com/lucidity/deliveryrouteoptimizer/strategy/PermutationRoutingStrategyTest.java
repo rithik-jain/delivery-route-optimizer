@@ -1,10 +1,11 @@
 package com.lucidity.deliveryrouteoptimizer.strategy;
 
-import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.distance.HaversineCalculator;
+import com.lucidity.deliveryrouteoptimizer.helper.TestDataFactory;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryRequestVo;
 import com.lucidity.deliveryrouteoptimizer.vo.DeliveryResponseVo;
 import com.lucidity.deliveryrouteoptimizer.vo.RouteStepVo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests for {@link PermutationRoutingStrategy}.
  *
  * <p>Since this is the exact solver, we can make strong assertions
- * about the structure and validity of the result — every order must
+ * about the structure and validity of the result - every order must
  * be picked up before being delivered, all orders must appear, and
  * the time/distance must be positive.</p>
  *
@@ -29,6 +30,7 @@ class PermutationRoutingStrategyTest {
 
     private PermutationRoutingStrategy strategy;
 
+    @BeforeEach
     void setUp() {
         strategy = new PermutationRoutingStrategy(new HaversineCalculator(), 20.0);
     }
@@ -93,7 +95,6 @@ class PermutationRoutingStrategyTest {
         DeliveryResponseVo response = strategy.findOptimalRoute(
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
-        // With a 60-minute prep time, the total time must be at least 60 minutes
         assertTrue(response.getTotalTimeInMinutes() >= 60.0,
                 "Total time should account for the long prep time");
         assertPrecedenceConstraintHolds(response.getRoute());
@@ -114,15 +115,17 @@ class PermutationRoutingStrategyTest {
         DeliveryResponseVo response = strategy.findOptimalRoute(
                 request.getDeliveryExecutiveLocation(), request.getOrders());
 
-        Set<String> pickups = new HashSet<>();
-        Set<String> deliveries = new HashSet<>();
+        Set<Integer> pickups = new HashSet<>();
+        Set<Integer> deliveries = new HashSet<>();
 
         for (RouteStepVo step : response.getRoute()) {
             String key = String.valueOf(step.getOrderNumber());
             if (step.getAction().contains("PICKUP")) {
-                assertTrue(pickups.add(key), "Order " + key + " should only be picked up once");
+                assertTrue(pickups.add(step.getOrderNumber()),
+                        "Order " + key + " should only be picked up once");
             } else {
-                assertTrue(deliveries.add(key), "Order " + key + " should only be delivered once");
+                assertTrue(deliveries.add(step.getOrderNumber()),
+                        "Order " + key + " should only be delivered once");
             }
         }
 
@@ -132,7 +135,6 @@ class PermutationRoutingStrategyTest {
 
     /**
      * Checks that every consumer delivery happens AFTER the corresponding restaurant pickup.
-     * This is the fundamental constraint of the problem.
      */
     private void assertPrecedenceConstraintHolds(List<RouteStepVo> route) {
         Set<Integer> pickedUp = new HashSet<>();

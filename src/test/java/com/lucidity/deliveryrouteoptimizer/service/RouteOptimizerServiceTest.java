@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for {@link RouteOptimizerService}.
  *
- * <p>The service layer is thin on purpose — it delegates to the strategy.
+ * <p>The service layer is thin on purpose - it delegates to the strategy.
  * These tests mainly verify that delegation happens correctly and that
  * the service doesn't silently swallow errors.</p>
  *

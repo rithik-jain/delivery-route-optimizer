@@ -52,19 +52,19 @@ public class RouteController {
     )
     @PostMapping("/optimize")
     public ResponseEntity<DeliveryResponseVo> optimizeRoute(@Valid @RequestBody DeliveryRequestVo request) {
-        LOGGER.info("POST /optimize — {} orders from location {}",
+        LOGGER.info("POST /optimize - {} orders from location {}",
                 request.getOrders().size(), request.getDeliveryExecutiveLocation());
 
         DeliveryResponseVo response = routeOptimizerService.optimizeRoute(request);
 
-        LOGGER.info("Route optimized — total time: {} min, distance: {} km, strategy: {}",
+        LOGGER.info("Route optimized - total time: {} min, distance: {} km, strategy: {}",
                 response.getTotalTimeInMinutes(), response.getTotalDistanceInKm(), response.getStrategy());
 
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Quick health check — is the service up?
+     * Quick health check - is the service up?
      *
      * @return a simple status message
      */

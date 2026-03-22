@@ -12,11 +12,11 @@ package com.lucidity.deliveryrouteoptimizer.util;
 public final class DeliveryTimeHelper {
 
     private DeliveryTimeHelper() {
-        // utility class — no instances needed
+        // utility class - no instances needed
     }
 
     /**
-     * Rounds a value to two decimal places — used for clean API responses.
+     * Rounds a value to two decimal places - used for clean API responses.
      *
      * @param value the raw value
      * @return the value rounded to 2 decimal places

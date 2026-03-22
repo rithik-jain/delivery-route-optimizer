@@ -15,7 +15,7 @@ public record ErrorResponse(
         List<String> messages
 ) {
     /**
-     * Convenience constructor — sets timestamp to now.
+     * Convenience constructor - sets timestamp to now.
      *
      * @param status   HTTP status code
      * @param error    error category

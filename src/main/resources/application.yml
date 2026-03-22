@@ -1,5 +1,9 @@
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
 
 spring:
   application:
@@ -23,3 +27,5 @@ logging:
   level:
     com.lucidity: DEBUG
     root: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] [%X{requestId:-NO_REQ}] %-5level %logger{36} - %msg%n"

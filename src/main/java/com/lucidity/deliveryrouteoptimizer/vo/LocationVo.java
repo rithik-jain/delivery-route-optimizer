@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
- * A simple geographic coordinate — latitude and longitude.
+ * A simple geographic coordinate - latitude and longitude.
  *
  * <p>This is the building block for every location in the system:
  * restaurants, consumers and the delivery executive's starting position.</p>
