@@ -1,17 +1,31 @@
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
 
 spring:
   application:
     name: delivery-route-optimizer
+  mvc:
+    async:
+      request-timeout: 30000
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 app:
   routing:
-    # Orders <= this threshold use the exact (permutation) solver.
-    # Above this, the greedy heuristic kicks in.
     exact-threshold: 7
+    average-speed-kmph: 20.0
 
 logging:
   level:
     com.lucidity: DEBUG
     root: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] [%X{requestId:-NO_REQ}] %-5level %logger{36} - %msg%n"

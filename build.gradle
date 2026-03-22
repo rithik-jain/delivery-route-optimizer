@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
+    id 'jacoco'
 }
 
 group = projectGroup
@@ -20,11 +21,59 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
+    implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}") {
+        exclude group: "org.apache.commons", module: "commons-lang3"
+    }
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "${jacocoVersion}"
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn tasks.named('test')
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    classDirectories.setFrom(files(sourceSets.main.output.classesDirs.collect {
+        fileTree(dir: it, exclude: [
+                '**/vo/**',
+                '**/exception/**',
+                '**/DeliveryRouteOptimizerApplication.class'
+        ])
+    }))
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+    dependsOn tasks.named('jacocoTestReport')
+
+    classDirectories.setFrom(files(sourceSets.main.output.classesDirs.collect {
+        fileTree(dir: it, exclude: [
+                '**/vo/**',
+                '**/exception/**',
+                '**/DeliveryRouteOptimizerApplication.class'
+        ])
+    }))
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestCoverageVerification')
 }
